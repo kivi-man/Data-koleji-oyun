@@ -1,0 +1,17 @@
+{
+  "backpackTaken": true,
+  "bullyPhase": 0,
+  "bullyTriggered": false,
+  "combo": 0,
+  "corridorDoorOpened": true,
+  "doorOpened": true,
+  "hasAdrenaline": false,
+  "health": 100,
+  "keyTaken": true,
+  "moneyTaken": true,
+  "scene": "atolye2",
+  "tourCompleted": true,
+  "waterTaken": true,
+  "x": 538.0,
+  "y": 1124.0
+}

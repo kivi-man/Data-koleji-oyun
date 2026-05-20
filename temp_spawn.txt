@@ -1,0 +1,18 @@
+    spawnPaperPlane() {
+        if (!this.sceneManager) return;
+        
+        const sceneData = this.sceneManager.scenes[this.sceneManager.currentScene];
+        const worldWidth = sceneData.worldWidth || this.RENDER_WIDTH;
+        
+        // Spawn from off-screen right with random height
+        const startX = worldWidth + 150;
+        const startY = 100 + Math.random() * 300; // Random height between 100-400
+        
+        // Random momentum with wider variation
+        const vx = -(6 + Math.random() * 10); // -6 to -16 (flying left, varied speed)
+        const vy = -5 + Math.random() * 10;   // -5 to +5 (can go up or down significantly)
+        
+        const plane = new PaperPlane(startX, startY, vx, vy, worldWidth, this.RENDER_HEIGHT);
+        this.paperPlanes.push(plane);
+        console.log(`✈️ Paper plane spawned at (${startX.toFixed(0)}, ${startY.toFixed(0)}) with velocity (${vx.toFixed(1)}, ${vy.toFixed(1)})`);
+    }

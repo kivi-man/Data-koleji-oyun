@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Agents OS</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { margin: 0; background: black; overflow: hidden; }
+        /* Ensure the overlay is correctly sized and visible */
+        .computer-overlay {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <script src="js/computer.js"></script>
+    <script>
+        // Check if demo query param or hash is passed
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDemo = urlParams.get('demo') === 'true' || window.location.hash.includes('demo=true');
+
+        // Mock game object
+        const mockGame = {
+            togglePause: function(val) {},
+            showSubtitle: function(text, time) { console.log("Subtitle:", text); },
+            setCustomTask: function(task) { console.log("Task:", task); },
+            sceneManager: {
+                isDemo: isDemo,
+                demoPhase: 3
+            }
+        };
+
+        const computer = new ComputerSystem(mockGame);
+        computer.open();
+
+        // Override close function to actually close the window
+        const originalClose = computer.close.bind(computer);
+        computer.close = function() {
+            originalClose();
+            window.close();
+        };
+
+        // If demo mode, open Voltsim tutorial immediately
+        if (isDemo) {
+            setTimeout(function() {
+                computer.openApp('voltsim');
+                computer.startTutorial();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

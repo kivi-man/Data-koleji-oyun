@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Data Koleji Oyunu">
+    <title>Data Koleji Oyunu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <h1 class="loading-title">DATA KOLEJİ OYUNU</h1>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-text">Yükleniyor...</p>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <canvas id="ui-canvas"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></canvas>
+
+        <!-- Mobile Touch Controls -->
+        <div id="mobile-controls" class="mobile-controls hidden">
+            <!-- Virtual Joystick -->
+            <div class="joystick-container">
+                <div class="joystick-base">
+                    <div class="joystick-stick"></div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-action btn-collect" data-action="collect"
+                    style="background: linear-gradient(135deg, #4488ff, #0055dd);">
+                    <span>F</span>
+                </button>
+                <button class="btn-action btn-jump" data-action="jump">
+                    <span>SPACE</span>
+                </button>
+                <button class="btn-action btn-punch-left" data-action="punch-left">
+                    <span>Q</span>
+                </button>
+                <button class="btn-action btn-punch-right" data-action="punch-right">
+                    <span>E</span>
+                </button>
+                <button class="btn-action btn-adrenaline" data-action="adrenaline">
+                    <span>X</span>
+                </button>
+                <button class="btn-action btn-enter" data-action="enter">
+                    <span>⏎</span>
+                </button>
+            </div>
+            
+            <!-- Top Controls -->
+            <div class="top-controls" style="position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; pointer-events: none; z-index: 200;">
+                <!-- Top Left: 1 and 2 -->
+                <div style="display: flex; gap: 15px; pointer-events: all;">
+                    <button class="btn-action btn-aim" data-action="aim"
+                        style="background: linear-gradient(135deg, #dd44ff, #8800dd); width: 90px; height: 90px; font-size: 2rem;">
+                        <span>1</span>
+                    </button>
+                    <button class="btn-action btn-item2" data-action="item2"
+                        style="background: linear-gradient(135deg, #ff8800, #dd4400); width: 90px; height: 90px; font-size: 2rem;">
+                        <span>2</span>
+                    </button>
+                </div>
+                
+                <!-- Top Center: ESC -->
+                <div style="pointer-events: all; margin-left: -195px;"> <!-- Offset to truly center -->
+                    <button class="btn-action btn-esc" data-action="escape"
+                        style="background: rgba(80, 80, 80, 0.8); width: 80px; height: 80px; font-size: 1.5rem;">
+                        <span>ESC</span>
+                    </button>
+                </div>
+
+                <!-- Empty div for flex space-between balance -->
+                <div style="width: 195px;"></div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Debug Menu -->
+        <div id="debug-menu" class="debug-menu hidden">
+            <h3>Debug Menu</h3>
+
+            <div class="debug-section">
+                <h4>Genel</h4>
+                <div class="debug-buttons">
+                    <button id="btn-full-health" class="debug-btn">❤️ Canı Fullle</button>
+                </div>
+            </div>
+
+            <div class="debug-section">
+                <h4>Render Modu</h4>
+                <div class="debug-buttons">
+                    <button id="btn-render-webgl" class="debug-btn">WebGL</button>
+                    <button id="btn-render-canvas" class="debug-btn">Canvas 2D</button>
+                </div>
+            </div>
+
+            <h3>Sahneler</h3>
+            <div id="scene-jump-list" class="scene-list">
+                <!-- Scenes will be populated here -->
+            </div>
+            <h3>İtemler</h3>
+            <div id="item-debug-list" class="scene-list">
+                <!-- Items will be populated here -->
+            </div>
+            <h3>Diyaloglar</h3>
+            <div id="dialogue-debug-list" class="scene-list">
+                <!-- Dialogues will be populated here -->
+            </div>
+            <button id="close-debug" class="debug-btn">Kapat</button>
+        </div>
+
+        <!-- Credits Screen -->
+        <div id="credits-screen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); color: #ffffff; flex-direction: column; align-items: center; z-index: 1000; font-family: 'PixelFont', Arial; overflow-y: auto; padding: 50px 20px;">
+            <h1 style="color: #ffd700; font-size: 3rem; margin-bottom: 30px; text-align: center;">Oyunu Yapanlar</h1>
+            
+            <div style="max-width: 800px; width: 100%; text-align: center; margin-bottom: 40px;">
+                <h2 style="color: #ffc832; font-size: 2rem; margin-bottom: 10px;">Oyun Ses, Senaryo ve Yönetmeni</h2>
+                <p style="font-size: 1.5rem; margin-bottom: 25px;">Osman Kıvanç Çömenli</p>
+
+                <h2 style="color: #ffc832; font-size: 2rem; margin-bottom: 10px;">Müzik ve Ses Tasarımı</h2>
+                <p style="font-size: 1.5rem; margin-bottom: 25px;">Osman Kıvanç Çömenli</p>
+
+                <h2 style="color: #ffc832; font-size: 2rem; margin-bottom: 10px;">Texture Yönetimi</h2>
+                <p style="font-size: 1.5rem; margin-bottom: 5px;">Enes Ensar Yıldız</p>
+                <p style="font-size: 1.5rem; margin-bottom: 25px;">Osman Kıvanç Çömenli</p>
+
+                <h2 style="color: #ffc832; font-size: 2rem; margin-bottom: 10px;">Texture Çizimi</h2>
+                <p style="font-size: 1.5rem; margin-bottom: 25px;">Enes Ensar</p>
+
+                <h2 style="color: #ffc832; font-size: 2rem; margin-bottom: 10px;">Mekân Fotoğrafçılığı</h2>
+                <p style="font-size: 1.5rem; margin-bottom: 5px;">Osman Kıvanç Çömenli</p>
+                <p style="font-size: 1.5rem; margin-bottom: 25px;">Enes Ensar</p>
+
+                <h2 style="color: #ffc832; font-size: 2rem; margin-bottom: 10px;">Testerlar</h2>
+                <p style="font-size: 1.5rem; margin-bottom: 5px;">Ahmet Büyükfidan</p>
+                <p style="font-size: 1.5rem; margin-bottom: 25px;">Batucan Gül</p>
+
+                <h1 style="color: #ffd700; font-size: 3rem; margin: 40px 0 20px; border-top: 2px solid #555; padding-top: 30px;">İletişim</h1>
+                <p style="font-size: 1.5rem; margin-bottom: 5px;"><strong>Osman Kıvanç Çömenli</strong></p>
+                <p style="font-size: 1.5rem; margin-bottom: 20px;"><a href="mailto:osmankivanccomenli@gmail.com" style="color: #4488ff; text-decoration: none;">osmankivanccomenli@gmail.com</a></p>
+
+                <p style="font-size: 1.5rem; margin-bottom: 5px;"><strong>Enes Ensar Yıldız</strong></p>
+                <p style="font-size: 1.5rem; margin-bottom: 40px;"><a href="mailto:enesensaryildiz33@gmail.com" style="color: #4488ff; text-decoration: none;">enesensaryildiz33@gmail.com</a></p>
+            </div>
+
+            <button id="close-credits-btn" style="background: #333; color: white; border: 2px solid #ffd700; padding: 15px 30px; font-size: 1.5rem; font-family: 'PixelFont', Arial; cursor: pointer; margin-top: 20px;" onclick="document.getElementById('credits-screen').style.display='none'" onmouseover="this.style.background='#444'" onmouseout="this.style.background='#333'">Geri Dön</button>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="bgm-normal" loop preload="auto">
+        <source src="audio/bgm_normal.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgm-battle" loop preload="auto">
+        <source src="audio/bgm_battle.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgm-dialogue" loop preload="auto">
+        <source src="audio/bgm_dialogue.mp3" type="audio/mpeg">
+    </audio>
+    <!-- bgm - fight missing, using battle as fallback -->
+    <audio id="bgm-fight" loop preload="auto">
+        <source src="audio/bgm_battle.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgm-horror" loop preload="auto">
+        <source src="audio/horror.wav" type="audio/wav">
+    </audio>
+    <audio id="bgm-intro" loop preload="auto">
+        <source src="audio/Ambians_doga.wav" type="audio/wav">
+    </audio>
+    <audio id="bgm-wind" loop preload="auto">
+        <source src="audio/wind.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="sfx-punch" preload="auto">
+        <source src="audio/punch.wav" type="audio/wav">
+    </audio>
+    <!-- walk missing -->
+    <audio id="sfx-walk" preload="auto"></audio>
+    <!-- injector missing -->
+    <audio id="sfx-injector" preload="auto"></audio>
+    <audio id="sfx-gun" preload="auto">
+        <source src="audio/gun.wav" type="audio/wav">
+    </audio>
+    <audio id="sfx-jumpscare" preload="auto">
+        <source src="audio/jumpscare.wav" type="audio/wav">
+    </audio>
+    <audio id="sfx-blip" preload="auto">
+        <source src="audio/blip.wav" type="audio/wav">
+    </audio>
+    <audio id="sfx-phone" preload="auto">
+        <source src="audio/Phone.wav" type="audio/wav">
+    </audio>
+    <audio id="sfx-zil-sesi" preload="auto">
+        <source src="audio/zil_sesi.wav" type="audio/wav">
+    </audio>
+    <audio id="sfx-ogrenci-zilsesisonu" preload="auto">
+        <source src="audio/ogrenci_zilsesisonu.wav" type="audio/wav">
+    </audio>
+    <audio id="sfx-horror" preload="auto">
+        <source src="audio/horror.wav" type="audio/wav">
+    </audio>
+
+    <!-- Game Scripts -->
+    <script>
+        // Global error handler for mobile debugging
+        window.addEventListener('error', function (e) {
+            console.error('🚨 GLOBAL ERROR:', e.message, 'at', e.filename, 'line', e.lineno);
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #ff6464;">
+                        <h2>JavaScript Error</h2>
+                        <p style="font-size: 14px; margin: 10px 0;">${e.message}</p>
+                        <p style="font-size: 12px; color: #cccccc;">File: ${e.filename}</p>
+                        <p style="font-size: 12px; color: #cccccc;">Line: ${e.lineno}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer;">
+                            Reload
+                        </button>
+                    </div>
+                `;
+            }
+        });
+
+        // Script loading tracker
+        const scriptsToLoad = ['api.js', 'utils.js', 'webgl-renderer.js', 'dialogue.js', 'combat.js', 'player.js', 'enemy.js', 'npc.js', 'paper_plane.js', 'stone.js', 'scene.js', 'demoScene.js', 'menu.js', 'computer.js', 'game.js'];
+        const loadedScripts = new Set();
+        Object.defineProperty(loadedScripts, 'length', {
+            get() {
+                return this.size;
+            }
+        });
+
+        function checkScriptLoad(scriptName, success) {
+            if (success) {
+                loadedScripts.add(scriptName);
+                console.log(`✅ Loaded: ${scriptName} (${loadedScripts.length}/${scriptsToLoad.length})`);
+            } else {
+                console.error(`❌ Failed to load: ${scriptName}`);
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #ff6464;">
+                            <h2>Script Loading Error</h2>
+                            <p style="font-size: 14px; margin: 10px 0;">Failed to load: ${scriptName}</p>
+                            <p style="font-size: 12px; color: #cccccc;">Check that the local file path and script name are correct.</p>
+                            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer;">
+                                Reload
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+    </script>
+
+    <script src="js/api.js" onload="checkScriptLoad('api.js', true)"
+        onerror="checkScriptLoad('api.js', false)"></script>
+    <script src="js/utils.js" onload="checkScriptLoad('utils.js', true)"
+        onerror="checkScriptLoad('utils.js', false)"></script>
+    <script src="js/webgl-renderer.js" onload="checkScriptLoad('webgl-renderer.js', true)"
+        onerror="checkScriptLoad('webgl-renderer.js', false)"></script>
+    <script src="js/dialogue.js" onload="checkScriptLoad('dialogue.js', true)"
+        onerror="checkScriptLoad('dialogue.js', false)"></script>
+    <script src="js/combat.js" onload="checkScriptLoad('combat.js', true)"
+        onerror="checkScriptLoad('combat.js', false)"></script>
+    <script src="js/player.js" onload="checkScriptLoad('player.js', true)"
+        onerror="checkScriptLoad('player.js', false)"></script>
+    <script src="js/enemy.js" onload="checkScriptLoad('enemy.js', true)"
+        onerror="checkScriptLoad('enemy.js', false)"></script>
+    <script src="js/npc.js" onload="checkScriptLoad('npc.js', true)"
+        onerror="checkScriptLoad('npc.js', false)"></script>
+    <script src="js/paper_plane.js" onload="checkScriptLoad('paper_plane.js', true)"
+        onerror="checkScriptLoad('paper_plane.js', false)"></script>
+    <script src="js/stone.js" onload="checkScriptLoad('stone.js', true)"
+        onerror="checkScriptLoad('stone.js', false)"></script>
+    <script src="js/scene.js" onload="checkScriptLoad('scene.js', true)"
+        onerror="checkScriptLoad('scene.js', false)"></script>
+    <script src="js/demoScene.js" onload="checkScriptLoad('demoScene.js', true)"
+        onerror="checkScriptLoad('demoScene.js', false)"></script>
+    <script src="js/menu.js" onload="checkScriptLoad('menu.js', true)"
+        onerror="checkScriptLoad('menu.js', false)"></script>
+    <script src="js/computer.js" onload="checkScriptLoad('computer.js', true)"
+        onerror="checkScriptLoad('computer.js', false)"></script>
+    <script src="js/game.js" onload="checkScriptLoad('game.js', true)"
+        onerror="checkScriptLoad('game.js', false)"></script>
+</body>
+
+</html>

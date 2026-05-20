@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoltSim - Devre Simülatörü</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Toolbox -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="bolt-icon">⚡</span>
+                <h1>VoltSim</h1>
+            </div>
+
+            <div class="toolbox">
+                <h3>Bileşenler</h3>
+                <div class="tools-grid">
+                    <div class="tool-item" draggable="true" data-type="battery">
+                        <div class="tool-icon battery"></div>
+                        <span>Pil</span>
+                    </div>
+                    <div class="tool-item" draggable="true" data-type="resistor">
+                        <div class="tool-icon resistor"></div>
+                        <span>Direnç</span>
+                    </div>
+                    <div class="tool-item" draggable="true" data-type="led">
+                        <div class="tool-icon led"></div>
+                        <span>LED</span>
+                    </div>
+                    <div class="tool-item" draggable="true" data-type="switch">
+                        <div class="tool-icon switch"></div>
+                        <span>Anahtar</span>
+                    </div>
+                    <div class="tool-item" draggable="true" data-type="arduino_nano">
+                        <div class="tool-icon arduino-nano-icon"></div>
+                        <span>Nano V3</span>
+                    </div>
+                    <div class="tool-item" draggable="true" data-type="relay">
+                        <div class="tool-icon relay"></div>
+                        <span>Röle</span>
+                    </div>
+                    <div class="tool-item" draggable="true" data-type="gnd">
+                        <div class="tool-icon gnd"></div>
+                        <span>Toprak</span>
+                    </div>
+                    <div class="tool-item" draggable="true" data-type="transistor">
+                        <div class="tool-icon transistor"></div>
+                        <span>NPN Trans.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-panel">
+                <button id="btn-run" class="btn primary">BAŞLAT</button>
+                <button id="btn-stop" class="btn secondary">DURDUR</button>
+                <button id="btn-clear" class="btn danger">TEMİZLE</button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <canvas id="circuit-canvas"></canvas>
+
+            <!-- Context Menu / Properties (Hidden by default) -->
+            <div id="properties-panel" class="properties-panel hidden">
+                <h4>Özellikler</h4>
+                <div id="prop-row-value" class="prop-row">
+                    <label>Değer:</label>
+                    <input type="number" id="prop-value">
+                    <span id="prop-unit">V</span>
+                </div>
+                <div id="prop-row-color" class="prop-row hidden">
+                    <label>Renk:</label>
+                    <select id="prop-color">
+                        <option value="#ef4444">Kırmızı</option>
+                        <option value="#22c55e">Yeşil</option>
+                        <option value="#eab308">Sarı</option>
+                        <option value="#3b82f6">Mavi</option>
+                        <option value="#ffffff">Beyaz</option>
+                    </select>
+                </div>
+                <button id="btn-delete-comp" class="btn-small danger">Sil</button>
+            </div>
+
+            <div class="hint-bar">
+                Sürükle: Bileşen Ekle • Tıkla: Kare Köşe/Başlat • Sağ Tık: Kabloyu Bitir • Çift Tık: Döndür/Aç-Kapat
+            </div>
+        </main>
+    </div>
+
+    <!-- Code Editor Modal -->
+    <div id="code-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Arduino Nano Editor</h3>
+                <button id="btn-close-code" class="close-btn">×</button>
+            </div>
+            <div class="editor-container">
+                <textarea id="arduino-code-editor" spellcheck="false"></textarea>
+            </div>
+            <div class="modal-footer">
+                <div class="status-msg" id="upload-status"></div>
+                <button id="btn-upload-code" class="btn primary">Yükle & Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Serial Monitor -->
+    <div id="serial-monitor" class="serial-monitor hidden">
+        <div class="serial-header">
+            <span>Serial Monitor</span>
+            <div class="serial-controls">
+                <button id="btn-clear-serial">Temizle</button>
+                <button id="btn-close-serial">×</button>
+            </div>
+        </div>
+        <div id="serial-output" class="serial-content">
+            <div class="serial-line system">Serial Monitor Başlatıldı...</div>
+        </div>
+    </div>
+
+    <script src="js/engine.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+
+</html>
