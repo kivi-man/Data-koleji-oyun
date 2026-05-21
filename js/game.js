@@ -836,7 +836,7 @@ class Game {
         }
 
         this.state = 'playing';
-        this.sceneManager = new SceneManager(this, this.canvas, this.RENDER_WIDTH, this.RENDER_HEIGHT, false);
+        this.sceneManager = new SceneManager(this, this.canvas, this.RENDER_WIDTH, this.RENDER_HEIGHT, false, saveData.isDemo || false);
         const initialScene = saveData.scene || 'game';
 
         this.player = new Player(
@@ -1231,6 +1231,7 @@ class Game {
             bullyPhase: this.sceneManager.bullyPhase,
             bullyTriggered: this.sceneManager.bullyTriggered,
             music: this.currentMusicName,
+            isDemo: this.sceneManager.isDemo,
             timestamp: Date.now()
         };
 
@@ -2131,11 +2132,13 @@ class Game {
     }
 
     setupDebugMenu() {
-        const list = document.getElementById('scene-jump-list');
+        const listMain = document.getElementById('scene-jump-list-main');
+        const listDemo = document.getElementById('scene-jump-list-demo');
+        const taskList = document.getElementById('task-debug-list');
         const itemList = document.getElementById('item-debug-list');
         const closeBtn = document.getElementById('close-debug');
 
-        if (!list || !itemList || !closeBtn) {
+        if (!listMain || !listDemo || !itemList || !closeBtn) {
             console.warn('⚠️ Debug menu elements not found in HTML');
             return;
         }
@@ -2159,21 +2162,66 @@ class Game {
             };
         }
 
-        // Scenes list
-        const scenes = ['game', 'koridor', 'outside', 'school', 'kantin', 'kat1', 'atolye_koridor', 'atolye1', 'atolye2'];
+        const changeModeAndScene = (scene, isDemo) => {
+            if (this.sceneManager) {
+                if (this.sceneManager.isDemo !== isDemo) {
+                    this.sceneManager.isDemo = isDemo;
+                    this.sceneManager.sceneDialogues = isDemo ? this.sceneManager.defineDemoDialogues() : this.sceneManager.defineSceneDialogues();
+                }
+                this.sceneManager.changeScene(scene, this.player, 'left');
+                this.toggleDebugMenu();
+            }
+        };
 
-        scenes.forEach(scene => {
+        // Scenes list (Main Game)
+        const mainScenes = ['game', 'koridor', 'outside', 'school', 'kantin', 'kat1', 'atolye_koridor', 'atolye1', 'atolye2'];
+        mainScenes.forEach(scene => {
             const btn = document.createElement('button');
             btn.className = 'debug-btn';
             btn.textContent = scene.toUpperCase();
-            btn.onclick = () => {
-                if (this.sceneManager) {
-                    this.sceneManager.changeScene(scene, this.player, 'left');
-                    this.toggleDebugMenu();
-                }
-            };
-            list.appendChild(btn);
+            btn.onclick = () => changeModeAndScene(scene, false);
+            listMain.appendChild(btn);
         });
+
+        // Scenes list (Demo Mode)
+        const demoScenes = ['game', 'koridor', 'kat1', 'atolye_koridor', 'atolye1'];
+        demoScenes.forEach(scene => {
+            const btn = document.createElement('button');
+            btn.className = 'debug-btn';
+            btn.textContent = scene.toUpperCase();
+            btn.onclick = () => changeModeAndScene(scene, true);
+            listDemo.appendChild(btn);
+        });
+
+        // Tasks list
+        if (taskList) {
+            const commonTasks = [
+                'Çantanı al', 'Odandan çık', 'Koridorun sonuna ulaş', 
+                'Anahtarı al', 'Parayı al', 'Kapıyı aç', 'Sinematiği izle',
+                'Zorbayı durdur', 'Emre Hoca\'yı bul', 'Atölyeleri gez (0/2)'
+            ];
+
+            const btnClear = document.createElement('button');
+            btnClear.className = 'debug-btn';
+            btnClear.textContent = 'Otomatik (Sıfırla)';
+            btnClear.style.backgroundColor = '#444';
+            btnClear.onclick = () => {
+                this.clearCustomTask();
+                this.toggleDebugMenu();
+            };
+            taskList.appendChild(btnClear);
+
+            commonTasks.forEach(task => {
+                const btn = document.createElement('button');
+                btn.className = 'debug-btn';
+                btn.textContent = task;
+                btn.onclick = () => {
+                    this.setCustomTask(task);
+                    this.toggleDebugMenu();
+                };
+                taskList.appendChild(btn);
+            });
+        }
 
         // Items list
         const items = [
